@@ -46,9 +46,7 @@ export default function BannerCarousel() {
 
   if (loading) {
     return (
-      <div className="banner-carousel banner-state">
-        Memuat banner…
-      </div>
+      <div className="banner-carousel banner-skel skel" aria-label="Memuat banner" />
     )
   }
 

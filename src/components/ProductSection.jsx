@@ -98,13 +98,27 @@ export default function ProductSection({ query = '', onOpen }) {
     return (
       <section className="section product-section">
         <div className="section-title">
-          <h2>{normalizedQuery ? 'Hasil pencarian' : 'Produk'}</h2>
+          <h2>{normalizedQuery ? 'Hasil pencarian' : 'Rekomendasi Untukmu'}</h2>
         </div>
 
-        <div className="products-state">
+        <p className="section-sub">
           {normalizedQuery
             ? `Mencari “${normalizedQuery}”…`
-            : 'Memuat produk…'}
+            : 'Produk pilihan dari UMKM lokal terbaik'}
+        </p>
+
+        <div className="product-grid">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div key={i} className="product-card">
+              <div className="product-image skel" />
+
+              <div className="product-info">
+                <div className="skel" style={{ height: 13, borderRadius: 7 }} />
+                <div className="skel" style={{ height: 13, width: '70%', borderRadius: 7 }} />
+                <div className="skel" style={{ height: 15, width: '45%', borderRadius: 7, marginTop: 4 }} />
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     )
@@ -114,10 +128,12 @@ export default function ProductSection({ query = '', onOpen }) {
     return (
       <section className="section product-section">
         <div className="section-title">
-          <h2>{normalizedQuery ? 'Hasil pencarian' : 'Produk'}</h2>
+          <h2>{normalizedQuery ? 'Hasil pencarian' : 'Rekomendasi Untukmu'}</h2>
         </div>
 
-        <div className="products-state">Gagal memuat produk</div>
+        <div className="products-state">
+          <span>😢 Gagal memuat produk. Coba muat ulang halaman.</span>
+        </div>
       </section>
     )
   }
@@ -127,17 +143,25 @@ export default function ProductSection({ query = '', onOpen }) {
 
   return (
     <section className="section product-section">
-      <div className="section-title">
-        <h2>
+      <div className="prod-head-card">
+        <div className="section-title">
+          <h2>
+            {normalizedQuery
+              ? `Hasil pencarian “${normalizedQuery}”`
+              : 'Rekomendasi Untukmu'}
+          </h2>
+        </div>
+
+        <p className="section-sub">
           {normalizedQuery
-            ? `Hasil pencarian “${normalizedQuery}”`
-            : 'Produk'}
-        </h2>
+            ? `${products.length} produk ditemukan`
+            : 'Produk pilihan dari UMKM lokal terbaik'}
+        </p>
       </div>
 
       {visible.length === 0 ? (
         <div className="products-state">
-          Produk tidak ditemukan untuk “{normalizedQuery}”
+          <span>🔍 Produk tidak ditemukan untuk “{normalizedQuery}”. Coba kata kunci lain.</span>
         </div>
       ) : (
         <div className="product-grid">

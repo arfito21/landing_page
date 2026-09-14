@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
+import './theme.css'
 import logo from './assets/logo.jpeg'
 import BannerCarousel from './components/BannerCarousel'
 import CategorySection from './components/CategorySection'
@@ -61,12 +62,14 @@ function App() {
           </div>
 
           <div className="search-wrap">
-            <span>⌕</span>
+            <span className="search-icon">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><line x1="16.5" y1="16.5" x2="21" y2="21" /></svg>
+            </span>
 
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Cari produk..."
+              placeholder="Cari baju, furniture, elektronik…"
             />
           </div>
 
@@ -133,6 +136,36 @@ function App() {
           <BannerCarousel />
         </section>
 
+        {/* KEUNGGULAN */}
+        <section className="perks">
+          <div className="perk">
+            <span className="perk-icon">🇮🇩</span>
+
+            <div>
+              <b>100% Produk Lokal</b>
+              <small>Dukung UMKM dari seluruh Indonesia</small>
+            </div>
+          </div>
+
+          <div className="perk">
+            <span className="perk-icon">🛡️</span>
+
+            <div>
+              <b>Belanja Aman</b>
+              <small>Transaksi aman lewat aplikasi resmi</small>
+            </div>
+          </div>
+
+          <div className="perk">
+            <span className="perk-icon">🚚</span>
+
+            <div>
+              <b>Pengiriman Luas</b>
+              <small>Jangkauan kirim ke banyak daerah</small>
+            </div>
+          </div>
+        </section>
+
         {/* KATEGORI */}
         <CategorySection />
 
@@ -143,6 +176,31 @@ function App() {
 
       {/* FOOTER */}
       <footer>
+
+        <div className="footer-brand">
+
+          <div className="brand-mark">
+            <img className="brand-logo" src={logo} alt="Lokaloka" />
+          </div>
+
+          <span className="footer-desc">
+            Pasar online Indonesia untuk produk lokal berkualitas dari UMKM terbaik.
+          </span>
+
+          <small>
+            Download aplikasi
+          </small>
+
+          <div className="stores">
+            <a
+              href="https://play.google.com/store/apps/details?id=id.co.localoka.mobile&hl=id"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              ▶ Google Play
+            </a>
+          </div>
+        </div>
 
         <div>
           <b>Bantuan dan Panduan</b>
@@ -163,28 +221,9 @@ function App() {
           <span>BRIVA</span>
         </div>
 
-        <div>
-        </div>
-
-        <div className="footer-brand">
-
-          <div className="brand-mark">
-            <img className="brand-logo" src={logo} alt="Lokaloka" />
-          </div>
-
-          <small>
-            Download aplikasi
-          </small>
-
-          <div className="stores">
-            <a
-              href="https://play.google.com/store/apps/details?id=id.co.localoka.mobile&hl=id"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span>▶ Google Play</span>
-            </a>
-          </div>
+        <div className="footer-bottom">
+          <span>© 2026 Lokaloka. Seluruh hak cipta dilindungi.</span>
+          <span>Dibuat dengan bangga untuk UMKM Indonesia 🇮🇩</span>
         </div>
 
       </footer>

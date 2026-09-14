@@ -32,11 +32,15 @@ export default function CategorySection() {
     return (
       <section className="section categories-section">
         <div className="section-title">
-          <h2>Kategori</h2>
+          <h2>Kategori Pilihan</h2>
         </div>
 
-        <div className="categories-loading">
-          Memuat kategori…
+        <p className="section-sub">Jelajahi kebutuhanmu berdasarkan kategori</p>
+
+        <div className="categories">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="category-skel skel" />
+          ))}
         </div>
       </section>
     )
@@ -54,7 +58,7 @@ export default function CategorySection() {
   return (
     <section className="section categories-section">
       <div className="section-title">
-        <h2>Kategori</h2>
+        <h2>Kategori Pilihan</h2>
 
         {hasMore && (
           <button onClick={() => setShowAll((value) => !value)}>
@@ -62,6 +66,8 @@ export default function CategorySection() {
           </button>
         )}
       </div>
+
+      <p className="section-sub">Jelajahi kebutuhanmu berdasarkan kategori</p>
 
       <div className="categories">
         {visible.map((category) => (

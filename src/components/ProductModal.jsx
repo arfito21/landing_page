@@ -188,6 +188,26 @@ export default function ProductModal({ product, onClose }) {
                 </b>
               </span>
             </div>
+
+            <div className="modal-cta">
+              <a
+                className="cta-primary"
+                href="https://play.google.com/store/apps/details?id=id.co.localoka.mobile&hl=id"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Buka di Aplikasi 📲
+              </a>
+
+              <a
+                className="cta-soft"
+                href="https://dashboard-v2.localoka.co.id/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Jadi Seller 🏪
+              </a>
+            </div>
           </div>
         </div>
       </div>
