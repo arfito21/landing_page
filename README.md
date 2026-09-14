@@ -1,4 +1,41 @@
-# React + Vite
+# Lokaloka Landing Page
+
+## Environment
+
+Copy `.env.example` to `.env` and set the `VITE_*` values. Vite injects these
+values during the build, so do not put private secrets in them: anything with a
+`VITE_` prefix is included in the browser bundle.
+
+## Local development
+
+```bash
+npm install
+npm run dev
+```
+
+The development server is available on port `5173`.
+
+## Docker
+
+Build the image with the values from your deployment environment:
+
+```bash
+docker build \
+	--build-arg VITE_API_BASE_URL=https://api.example.com/api/v1 \
+	--build-arg VITE_DASHBOARD_URL=https://dashboard.example.com/ \
+	--build-arg VITE_PLAYSTORE_URL=https://play.google.com/store/apps/details?id=... \
+	-t localoka-landing .
+```
+
+Run it on port `5173`:
+
+```bash
+docker run --rm -p 5173:5173 localoka-landing
+```
+
+The image uses only the `Dockerfile`; no runtime entrypoint is required.
+
+## React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

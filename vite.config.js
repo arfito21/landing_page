@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const baseUrl =
     env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1'
-  let proxyTarget = 'http://localhost:8080'
+  let proxyTarget
   try {
     proxyTarget = new URL(baseUrl).origin
   } catch {
