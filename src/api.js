@@ -31,20 +31,27 @@ async function apiGet(path) {
 
 // BANNER — GET /banners
 export async function getBanners() {
-  const data = await apiGet('/banners')
+  const data = await apiGet('/banners?per_page=100')
   return data?.data ?? []
 }
 
-// Contoh endpoint berikutnya (aktifkan saat dibutuhkan):
+// KATEGORI — GET /categories
+export async function getCategories() {
+  const data = await apiGet('/categories?per_page=100')
+  return data?.data ?? []
+}
 
-// GET /categories
-// export async function getCategories() {
-//   const data = await apiGet('/categories')
-//   return data?.data ?? []
-// }
+// PRODUK — GET /products (pagination: ?page=1&per_page=100)
+export async function getProducts(page = 1, perPage = 100) {
+  const data = await apiGet(`/products?page=${page}&per_page=${perPage}`)
+  return {
+    data: data?.data ?? [],
+    paging: data?.paging,
+  }
+}
 
-// GET /products
-// export async function getProducts() {
-//   const data = await apiGet('/products')
-//   return data?.data ?? []
-// }
+// DETAIL PRODUK — GET /products/:id
+export async function getProductDetail(id) {
+  return apiGet(`/products/${id}`)
+}
+
