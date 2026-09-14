@@ -2,6 +2,7 @@
 
 # ============================================================
 # LOKALOKA LANDING PAGE — production image untuk Komodo DevOps
+# Vite berjalan di port 5173
 # ============================================================
 
 # ---------- Build stage ----------
@@ -15,20 +16,15 @@ COPY . .
 RUN npm run build
 
 # ---------- Runtime stage ----------
-FROM nginx:1.27-alpine AS runtime
+FROM node:20-alpine AS runtime
+WORKDIR /app
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist /usr/share/nginx/html
+ENV NODE_ENV=production
 
-# Generate env.js dari environment Komodo saat container start
-COPY docker-entrypoint.sh /usr/local/bin/app-entrypoint.sh
-RUN chmod +x /usr/local/bin/app-entrypoint.sh
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/package-lock.json ./package-lock.json
+COPY --from=builder /app/dist ./dist
 
-# Nginx listen langsung di 5173
 EXPOSE 5173
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget -qO- http://127.0.0.1:5173/ > /dev/null 2>&1 || exit 1
-
-ENTRYPOINT ["/usr/local/bin/app-entrypoint.sh"]
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "5173"]
