@@ -6,10 +6,12 @@ import BannerCarousel from './components/BannerCarousel'
 import CategorySection from './components/CategorySection'
 import ProductSection from './components/ProductSection'
 import ProductModal from './components/ProductModal'
+import SearchBar from './components/SearchBar'
 
 function App() {
   const [selected, setSelected] = useState(null)
   const [query, setQuery] = useState('')
+  const [storeFilter, setStoreFilter] = useState(null)
   const [showLogin, setShowLogin] = useState(false)
   const loginRef = useRef(null)
 
@@ -30,6 +32,17 @@ function App() {
 
   const closeProduct = () => {
     setSelected(null)
+  }
+
+  const visitStore = (seller) => {
+    if (!seller?.id && !seller?.name) return
+    setStoreFilter({ id: seller?.id ?? null, name: seller?.name ?? 'Toko' })
+    setSelected(null)
+    requestAnimationFrame(() => {
+      document
+        .querySelector('.product-section')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
   }
 
   const openPrincipalDashboard = () => {
@@ -61,17 +74,7 @@ function App() {
             <img className="brand-logo" src={logo} alt="Lokaloka" />
           </div>
 
-          <div className="search-wrap">
-            <span className="search-icon">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><line x1="16.5" y1="16.5" x2="21" y2="21" /></svg>
-            </span>
-
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Cari baju, furniture, elektronik…"
-            />
-          </div>
+          <SearchBar value={query} onChange={setQuery} onPickProduct={openProduct} />
 
           <nav className="nav-actions">
 
@@ -170,7 +173,7 @@ function App() {
         <CategorySection />
 
         {/* PRODUK */}
-        <ProductSection query={query} onOpen={openProduct} />
+        <ProductSection query={query} onOpen={openProduct} storeFilter={storeFilter} onClearStore={() => setStoreFilter(null)} />
 
       </main>
 
@@ -221,9 +224,31 @@ function App() {
           <span>BRIVA</span>
         </div>
 
+        <div className="footer-complaint">
+          <b>Layanan Pengaduan Konsumen</b>
+          <span className="complaint-company">PT. Super Pasar Rakyat Indonesia</span>
+          <span className="complaint-contact">
+            Hubungi{' '}
+            <a href="tel:081119990084">0811 1999 0084</a>
+            {' '}atau email ke{' '}
+            <a href="mailto:help@pari.co.id">help@pari.co.id</a>
+          </span>
+          <span className="complaint-gov">
+            Direktorat Jenderal Perlindungan Konsumen dan Tertib Niaga
+            Kementerian Perdagangan RI — Whatsapp Ditjen PKTN{' '}
+            <a
+              href="https://wa.me/6285311111010"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              0853 1111 1010
+            </a>
+          </span>
+        </div>
+
         <div className="footer-bottom">
           <span>© 2026 Lokaloka. Seluruh hak cipta dilindungi.</span>
-          <span>Dibuat dengan bangga untuk UMKM Indonesia 🇮🇩</span>
+          <span>Dibuat dengan bangga untuk UMKM Indonesia</span>
         </div>
 
       </footer>
@@ -234,6 +259,7 @@ function App() {
           key={selected.id}
           product={selected}
           onClose={closeProduct}
+          onVisitStore={visitStore}
         />
       )}
 

@@ -6,7 +6,7 @@ const PER_PAGE = 100
 const INITIAL_VISIBLE = 15
 const SEARCH_DEBOUNCE_MS = 400
 
-export default function ProductSection({ query = '', onOpen }) {
+export default function ProductSection({ query = '', onOpen, storeFilter, onClearStore }) {
   const [products, setProducts] = useState([])
   const [totalPage, setTotalPage] = useState(1)
   const [loading, setLoading] = useState(true)
@@ -15,9 +15,10 @@ export default function ProductSection({ query = '', onOpen }) {
   const [showAll, setShowAll] = useState(false)
 
   const normalizedQuery = query.trim()
+  const storeName = storeFilter?.name?.trim() || ''
 
-  // Muat produk biasa, atau hasil pencarian (POST /products/search)
-  // dengan debounce saat query berubah.
+  // Muat produk biasa, hasil pencarian (POST /products/search), atau
+  // filter toko (POST /products/search dengan seller_id) dengan debounce.
   useEffect(() => {
     let cancelled = false
     const timer = setTimeout(() => {
@@ -25,13 +26,20 @@ export default function ProductSection({ query = '', onOpen }) {
       setError(false)
       setShowAll(false)
 
-      const request = normalizedQuery
+      const request = storeFilter?.id
         ? searchProducts({
-            search: normalizedQuery,
+            seller_id: storeFilter.id,
+            search: normalizedQuery || undefined,
             page: 1,
             per_page: PER_PAGE,
           })
-        : getProducts(1, PER_PAGE)
+        : normalizedQuery
+          ? searchProducts({
+              search: normalizedQuery,
+              page: 1,
+              per_page: PER_PAGE,
+            })
+          : getProducts(1, PER_PAGE)
 
       request
         .then((res) => {
@@ -51,16 +59,23 @@ export default function ProductSection({ query = '', onOpen }) {
       cancelled = true
       clearTimeout(timer)
     }
-  }, [normalizedQuery])
+  }, [normalizedQuery, storeFilter?.id])
 
   const fetchPage = (page) =>
-    normalizedQuery
+    storeFilter?.id
       ? searchProducts({
-          search: normalizedQuery,
+          seller_id: storeFilter.id,
+          search: normalizedQuery || undefined,
           page,
           per_page: PER_PAGE,
         })
-      : getProducts(page, PER_PAGE)
+      : normalizedQuery
+        ? searchProducts({
+            search: normalizedQuery,
+            page,
+            per_page: PER_PAGE,
+          })
+        : getProducts(page, PER_PAGE)
 
   // Muat semua halaman tersisa saat "Lihat Semua" diklik
   const loadAll = async () => {
@@ -94,17 +109,26 @@ export default function ProductSection({ query = '', onOpen }) {
     setShowAll((value) => !value)
   }
 
+  const heading = storeName
+    ? `Produk dari ${storeName}`
+    : normalizedQuery
+      ? `Hasil pencarian "${normalizedQuery}"`
+      : 'Rekomendasi Untukmu'
+  const subheading = storeName
+    ? `${products.length} produk dari toko ini`
+    : normalizedQuery
+      ? `${products.length} produk ditemukan`
+      : 'Produk pilihan dari UMKM lokal terbaik'
+
   if (loading) {
     return (
       <section className="section product-section">
         <div className="section-title">
-          <h2>{normalizedQuery ? 'Hasil pencarian' : 'Rekomendasi Untukmu'}</h2>
+          <h2>{heading}</h2>
         </div>
 
         <p className="section-sub">
-          {normalizedQuery
-            ? `Mencari “${normalizedQuery}”…`
-            : 'Produk pilihan dari UMKM lokal terbaik'}
+          {subheading}
         </p>
 
         <div className="product-grid">
@@ -128,7 +152,7 @@ export default function ProductSection({ query = '', onOpen }) {
     return (
       <section className="section product-section">
         <div className="section-title">
-          <h2>{normalizedQuery ? 'Hasil pencarian' : 'Rekomendasi Untukmu'}</h2>
+          <h2>{heading}</h2>
         </div>
 
         <div className="products-state">
@@ -146,22 +170,29 @@ export default function ProductSection({ query = '', onOpen }) {
       <div className="prod-head-card">
         <div className="section-title">
           <h2>
-            {normalizedQuery
-              ? `Hasil pencarian “${normalizedQuery}”`
-              : 'Rekomendasi Untukmu'}
+            {heading}
           </h2>
         </div>
 
         <p className="section-sub">
-          {normalizedQuery
-            ? `${products.length} produk ditemukan`
-            : 'Produk pilihan dari UMKM lokal terbaik'}
+          {subheading}
         </p>
       </div>
 
+      {storeName && (
+        <div className="store-filter-chip">
+          <span>
+            🏬 Menampilkan produk dari <b>{storeName}</b>
+          </span>
+          <button type="button" onClick={onClearStore}>
+            ✕ Tampilkan semua
+          </button>
+        </div>
+      )}
+
       {visible.length === 0 ? (
         <div className="products-state">
-          <span>🔍 Produk tidak ditemukan untuk “{normalizedQuery}”. Coba kata kunci lain.</span>
+          <span>🔍 Produk tidak ditemukan{storeName ? ` di toko ${storeName}` : ''}{normalizedQuery ? ` untuk "${normalizedQuery}"` : ''}. Coba kata kunci lain.</span>
         </div>
       ) : (
         <div className="product-grid">
