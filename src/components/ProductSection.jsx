@@ -1,97 +1,111 @@
-import { useEffect, useRef, useState } from 'react'
-import { getProducts } from '../api'
+import { useEffect, useState } from 'react'
+import { getProducts, searchProducts } from '../api'
 import ProductCard from './ProductCard'
 
 const PER_PAGE = 100
+const INITIAL_VISIBLE = 15
+const SEARCH_DEBOUNCE_MS = 400
 
 export default function ProductSection({ query = '', onOpen }) {
   const [products, setProducts] = useState([])
-  const [page, setPage] = useState(1)
   const [totalPage, setTotalPage] = useState(1)
   const [loading, setLoading] = useState(true)
-  const [loadingMore, setLoadingMore] = useState(false)
+  const [loadingAll, setLoadingAll] = useState(false)
   const [error, setError] = useState(false)
-  const sentinelRef = useRef(null)
-  const pageRef = useRef(1)
-  const totalPageRef = useRef(1)
-  const loadingRef = useRef(false)
+  const [showAll, setShowAll] = useState(false)
 
-  // Muat halaman pertama
+  const normalizedQuery = query.trim()
+
+  // Muat produk biasa, atau hasil pencarian (POST /products/search)
+  // dengan debounce saat query berubah.
   useEffect(() => {
     let cancelled = false
+    const timer = setTimeout(() => {
+      setLoading(true)
+      setError(false)
+      setShowAll(false)
 
-    getProducts(1, PER_PAGE)
-      .then((res) => {
-        if (cancelled) return
-        pageRef.current = res.paging?.page ?? 1
-        totalPageRef.current = res.paging?.total_page ?? 1
-        setProducts(res.data)
-        setPage(pageRef.current)
-        setTotalPage(totalPageRef.current)
-      })
-      .catch(() => {
-        if (!cancelled) setError(true)
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
+      const request = normalizedQuery
+        ? searchProducts({
+            search: normalizedQuery,
+            page: 1,
+            per_page: PER_PAGE,
+          })
+        : getProducts(1, PER_PAGE)
+
+      request
+        .then((res) => {
+          if (cancelled) return
+          setProducts(res.data)
+          setTotalPage(res.paging?.total_page ?? 1)
+        })
+        .catch(() => {
+          if (!cancelled) setError(true)
+        })
+        .finally(() => {
+          if (!cancelled) setLoading(false)
+        })
+    }, SEARCH_DEBOUNCE_MS)
 
     return () => {
       cancelled = true
+      clearTimeout(timer)
     }
-  }, [])
+  }, [normalizedQuery])
 
-  // Infinite scroll — muat halaman berikutnya saat sentinel terlihat
-  useEffect(() => {
-    const sentinel = sentinelRef.current
-    if (!sentinel) return
+  const fetchPage = (page) =>
+    normalizedQuery
+      ? searchProducts({
+          search: normalizedQuery,
+          page,
+          per_page: PER_PAGE,
+        })
+      : getProducts(page, PER_PAGE)
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries[0].isIntersecting) return
-        if (loadingRef.current) return
-        if (pageRef.current >= totalPageRef.current) return
+  // Muat semua halaman tersisa saat "Lihat Semua" diklik
+  const loadAll = async () => {
+    if (loadingAll) return
+    setLoadingAll(true)
 
-        loadingRef.current = true
-        setLoadingMore(true)
+    try {
+      let current = products
 
-        getProducts(pageRef.current + 1, PER_PAGE)
-          .then((res) => {
-            setProducts((prev) => {
-              const existing = new Set(prev.map((p) => p.id))
-              const fresh = (res.data ?? []).filter(
-                (p) => !existing.has(p.id)
-              )
-              return [...prev, ...fresh]
-            })
+      for (let page = 2; page <= totalPage; page += 1) {
+        const res = await fetchPage(page)
+        const existing = new Set(current.map((item) => item.id))
+        const fresh = (res.data ?? []).filter(
+          (item) => !existing.has(item.id)
+        )
+        current = [...current, ...fresh]
+      }
 
-            pageRef.current = res.paging?.page ?? pageRef.current + 1
-            totalPageRef.current =
-              res.paging?.total_page ?? totalPageRef.current
-            setPage(pageRef.current)
-            setTotalPage(totalPageRef.current)
-          })
-          .catch(() => setError(true))
-          .finally(() => {
-            loadingRef.current = false
-            setLoadingMore(false)
-          })
-      },
-      { rootMargin: '300px' }
-    )
+      setProducts(current)
+    } catch {
+      setError(true)
+    } finally {
+      setLoadingAll(false)
+    }
+  }
 
-    observer.observe(sentinel)
-    return () => observer.disconnect()
-  }, [])
+  const toggleShowAll = () => {
+    if (!showAll && totalPage > 1) {
+      loadAll()
+    }
+    setShowAll((value) => !value)
+  }
 
   if (loading) {
     return (
       <section className="section product-section">
         <div className="section-title">
-          <h2>Produk</h2>
+          <h2>{normalizedQuery ? 'Hasil pencarian' : 'Produk'}</h2>
         </div>
 
-        <div className="products-state">Memuat produk…</div>
+        <div className="products-state">
+          {normalizedQuery
+            ? `Mencari “${normalizedQuery}”…`
+            : 'Memuat produk…'}
+        </div>
       </section>
     )
   }
@@ -100,7 +114,7 @@ export default function ProductSection({ query = '', onOpen }) {
     return (
       <section className="section product-section">
         <div className="section-title">
-          <h2>Produk</h2>
+          <h2>{normalizedQuery ? 'Hasil pencarian' : 'Produk'}</h2>
         </div>
 
         <div className="products-state">Gagal memuat produk</div>
@@ -108,25 +122,23 @@ export default function ProductSection({ query = '', onOpen }) {
     )
   }
 
-  const normalizedQuery = query.trim().toLowerCase()
-  const visible = normalizedQuery
-    ? products.filter(
-        (p) =>
-          (p.name ?? '').toLowerCase().includes(normalizedQuery) ||
-          (p.seller?.name ?? '').toLowerCase().includes(normalizedQuery)
-      )
-    : products
-
-  const hasMore = page < totalPage
+  const hasMore = products.length > INITIAL_VISIBLE
+  const visible = showAll ? products : products.slice(0, INITIAL_VISIBLE)
 
   return (
     <section className="section product-section">
       <div className="section-title">
-        <h2>Produk</h2>
+        <h2>
+          {normalizedQuery
+            ? `Hasil pencarian “${normalizedQuery}”`
+            : 'Produk'}
+        </h2>
       </div>
 
       {visible.length === 0 ? (
-        <div className="products-state">Produk tidak ditemukan</div>
+        <div className="products-state">
+          Produk tidak ditemukan untuk “{normalizedQuery}”
+        </div>
       ) : (
         <div className="product-grid">
           {visible.map((product) => (
@@ -139,17 +151,21 @@ export default function ProductSection({ query = '', onOpen }) {
         </div>
       )}
 
-      {loadingMore && (
+      {loadingAll && (
         <div className="products-loading-more">
-          Memuat produk lainnya…
+          Memuat semua produk…
         </div>
       )}
 
-      {!hasMore && products.length > 0 && (
-        <div className="products-end">Semua produk sudah ditampilkan</div>
+      {hasMore && (
+        <div className="products-more">
+          <button className="more-btn" onClick={toggleShowAll}>
+            {showAll ? 'Sembunyikan' : 'Lihat Semua'}
+          </button>
+        </div>
       )}
-
-      <div ref={sentinelRef} className="product-sentinel" />
     </section>
   )
 }
+
+

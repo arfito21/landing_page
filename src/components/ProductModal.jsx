@@ -69,36 +69,52 @@ export default function ProductModal({ product, onClose }) {
       <div className="product-modal" onClick={(e) => e.stopPropagation()}>
         <button className="close" onClick={onClose}>×</button>
 
-        <div className="modal-gallery">
-          <img
-            className="modal-main-image"
-            src={images[activeImage] || detail.thumbnail}
-            alt={detail.name}
-          />
+        <div className="modal-detail">
+          <div className="modal-gallery">
+            <img
+              className="modal-main-image"
+              src={images[activeImage] || detail.thumbnail}
+              alt={detail.name}
+            />
 
-          {images.length > 1 && (
-            <div className="modal-thumbs">
-              {images.map((src, i) => (
-                <button
-                  key={i}
-                  className={i === activeImage ? 'active' : ''}
-                  onClick={() => setActiveImage(i)}
-                  aria-label={`Gambar ${i + 1}`}
-                >
-                  <img src={src} alt={`${detail.name} ${i + 1}`} />
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+            {images.length > 1 && (
+              <div className="modal-thumbs">
+                {images.map((src, i) => (
+                  <button
+                    key={i}
+                    className={i === activeImage ? 'active' : ''}
+                    onClick={() => setActiveImage(i)}
+                    aria-label={`Gambar ${i + 1}`}
+                  >
+                    <img src={src} alt={`${detail.name} ${i + 1}`} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
-        <div className="modal-body">
-          <div className="modal-main">
+          <div className="modal-info">
             <span className="tag">
               {(detail.categories ?? []).join(', ') || 'Produk'}
             </span>
 
             <h2>{detail.name}</h2>
+
+            <div className="modal-meta-line">
+              <span className="rating">
+                ★ {Number(detail.rating).toFixed(1)}
+              </span>
+
+              <span>
+                {detail.total_review} ulasan
+              </span>
+
+              <span className="dot">•</span>
+
+              <span>
+                {Number(detail.total_sold).toLocaleString('id-ID')} terjual
+              </span>
+            </div>
 
             <div className="modal-price">
               {formatPrice(displayPrice)}
@@ -163,22 +179,6 @@ export default function ProductModal({ product, onClose }) {
               <span>
                 ⌖ Lokasi{' '}
                 <b>{detail.seller?.location}</b>
-              </span>
-
-              <span>
-                ★{' '}
-                <b>
-                  {Number(detail.rating).toFixed(1)} (
-                  {detail.total_review} ulasan)
-                </b>
-              </span>
-
-              <span>
-                🔥{' '}
-                <b>
-                  {Number(detail.total_sold).toLocaleString('id-ID')}{' '}
-                  terjual
-                </b>
               </span>
 
               <span>

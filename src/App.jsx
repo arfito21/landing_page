@@ -66,7 +66,7 @@ function App() {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Cari buah, sayur, makanan..."
+              placeholder="Cari produk..."
             />
           </div>
 

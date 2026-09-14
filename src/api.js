@@ -55,3 +55,28 @@ export async function getProductDetail(id) {
   return apiGet(`/products/${id}`)
 }
 
+// PENCARIAN PRODUK — POST /products/search
+export async function searchProducts(params = {}) {
+  const response = await fetch(`${API_BASE}/products/search`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Request gagal (${response.status})`)
+  }
+
+  const json = await response.json()
+
+  if (json.status !== 'success') {
+    throw new Error(json.message || 'Terjadi kesalahan pada API')
+  }
+
+  return {
+    data: json.response_data?.data ?? [],
+    paging: json.response_data?.paging,
+  }
+}
+
+
