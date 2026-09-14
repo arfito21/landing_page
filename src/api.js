@@ -1,20 +1,21 @@
 // ============================================================
 // API LAYER — endpoint landing page
-// Base: https://api.landing-page.superpari.co.id/api/v1
 //
-// Di mode development, request melewati Vite proxy (vite.config.js)
-// agar terhindar dari masalah CORS. Di mode production, memanggil
-// URL absolut API.
+// Base URL diambil dari env (VITE_API_BASE_URL) via src/config.js.
+//
+// Di mode development, request memakai path relatif '/api/v1' yang
+// diteruskan Vite proxy (vite.config.js) agar bebas CORS.
+// Di mode production, memanggil URL absolut API dari env.
 //
 // Tambahkan endpoint baru di sini (categories, products, dll.).
 // ============================================================
 
-export const API_BASE = import.meta.env.PROD
-  ? 'https://api.landing-page.superpari.co.id/api/v1'
-  : '/api/v1'
+import { API_BASE } from './config'
+
+const BASE = import.meta.env.DEV ? '/api/v1' : API_BASE
 
 async function apiGet(path) {
-  const response = await fetch(`${API_BASE}${path}`)
+  const response = await fetch(`${BASE}${path}`)
 
   if (!response.ok) {
     throw new Error(`Request gagal (${response.status})`)
@@ -57,7 +58,7 @@ export async function getProductDetail(id) {
 
 // PENCARIAN PRODUK — POST /products/search
 export async function searchProducts(params = {}) {
-  const response = await fetch(`${API_BASE}/products/search`, {
+  const response = await fetch(`${BASE}/products/search`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(params),

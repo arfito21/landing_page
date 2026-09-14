@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react'
 import { getProductDetail } from '../api'
+import { DASHBOARD_URL, PLAYSTORE_URL } from '../config'
 import { formatPrice } from '../utils'
 
-const STORE_URL =
-  'https://play.google.com/store/apps/details?id=id.co.localoka.mobile&hl=id'
-
-export default function ProductModal({ product, onClose,  }) {
+export default function ProductModal({ product, onClose, onVisitStore }) {
   const [detail, setDetail] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -35,8 +33,8 @@ export default function ProductModal({ product, onClose,  }) {
     return (
       <div className="modal-backdrop" onClick={onClose}>
         <div className="product-modal" onClick={(e) => e.stopPropagation()}>
-          <button className="close" onClick={onClose}>x</button>
-          <div className="modal-loading">Memuat detail produk...</div>
+          <button className="close" onClick={onClose}>×</button>
+          <div className="modal-loading">Memuat detail produk…</div>
         </div>
       </div>
     )
@@ -46,7 +44,7 @@ export default function ProductModal({ product, onClose,  }) {
     return (
       <div className="modal-backdrop" onClick={onClose}>
         <div className="product-modal" onClick={(e) => e.stopPropagation()}>
-          <button className="close" onClick={onClose}>x</button>
+          <button className="close" onClick={onClose}>×</button>
           <div className="modal-loading">Gagal memuat detail produk</div>
         </div>
       </div>
@@ -68,7 +66,7 @@ export default function ProductModal({ product, onClose,  }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="product-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="close" onClick={onClose}>x</button>
+        <button className="close" onClick={onClose}>×</button>
         <div className="modal-detail modal-detail-3">
           <div className="modal-gallery">
             <img className="modal-main-image" src={images[activeImage] || detail.thumbnail} alt={detail.name} />
@@ -86,9 +84,9 @@ export default function ProductModal({ product, onClose,  }) {
             <span className="tag">{(detail.categories ?? []).join(', ') || 'Produk'}</span>
             <h2>{detail.name}</h2>
             <div className="modal-meta-line">
-              <span className="rating">* {Number(detail.rating ?? 0).toFixed(1)}</span>
+              <span className="rating">★ {Number(detail.rating ?? 0).toFixed(1)}</span>
               <span>{detail.total_review ?? 0} ulasan</span>
-              <span className="dot">-</span>
+              <span className="dot">•</span>
               <span>{soldText} terjual</span>
             </div>
             <div className="modal-price">
@@ -105,7 +103,7 @@ export default function ProductModal({ product, onClose,  }) {
           <div className="modal-variant">
             {pricing.length > 0 ? (
               <div className="variants">
-                <b className="variants-title">Varian dan Harga</b>
+                <b className="variants-title">Varian &amp; Harga</b>
                 <div className="variant-price-list">
                   {pricing.map((item) => {
                     const ip = item.pricePerUnit?.price ?? item.groceryPrice?.price ?? 0
@@ -148,9 +146,14 @@ export default function ProductModal({ product, onClose,  }) {
               <div className="seller-cell"><small>Produk</small><b>{variantCount}</b></div>
               <div className="seller-cell"><small>Stok</small><b>{stockText}</b></div>
             </div>
+            <div className="seller-actions">
+              <a className="seller-btn primary" href={PLAYSTORE_URL} target="_blank" rel="noopener noreferrer">💬 Chat Sekarang</a>
+              <button className="seller-btn" type="button" onClick={() => onVisitStore?.(detail.seller)} disabled={!detail.seller?.id && !detail.seller?.name}>🏬 Kunjungi Toko</button>
+            </div>
           </div>
           <div className="modal-cta">
-            <a className="cta-primary" href={STORE_URL} target="_blank" rel="noopener noreferrer">Buka di Aplikasi</a>
+            <a className="cta-primary" href={PLAYSTORE_URL} target="_blank" rel="noopener noreferrer">Buka di Aplikasi 📲</a>
+            <a className="cta-soft" href={DASHBOARD_URL} target="_blank" rel="noopener noreferrer">Jadi Seller 🏪</a>
           </div>
         </div>
       </div>

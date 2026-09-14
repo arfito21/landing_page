@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import './theme.css'
 import logo from './assets/logo.jpeg'
+import { DASHBOARD_URL, PLAYSTORE_URL } from './config'
 import BannerCarousel from './components/BannerCarousel'
 import CategorySection from './components/CategorySection'
 import ProductSection from './components/ProductSection'
@@ -47,7 +48,7 @@ function App() {
 
   const openPrincipalDashboard = () => {
     window.open(
-      'https://dashboard-v2.localoka.co.id/',
+      DASHBOARD_URL,
       '_blank',
       'noopener,noreferrer'
     )
@@ -56,7 +57,7 @@ function App() {
 
   const openBuyerPlayStore = () => {
     window.open(
-      'https://play.google.com/store/apps/details?id=id.co.localoka.mobile&hl=id',
+      PLAYSTORE_URL,
       '_blank',
       'noopener,noreferrer'
     )
@@ -196,7 +197,7 @@ function App() {
 
           <div className="stores">
             <a
-              href="https://play.google.com/store/apps/details?id=id.co.localoka.mobile&hl=id"
+              href={PLAYSTORE_URL}
               target="_blank"
               rel="noopener noreferrer"
             >
