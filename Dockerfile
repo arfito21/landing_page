@@ -37,10 +37,11 @@ COPY --from=builder /app/node_modules ./node_modules
 
 # Runtime ENV generator
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh \
+	&& chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 5173
 
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/usr/local/bin/docker-entrypoint.sh"]
 
 CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "5173"]
