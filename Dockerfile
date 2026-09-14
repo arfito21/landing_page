@@ -1,41 +1,9 @@
-# syntax=docker/dockerfile:1
-
-# ============================================================
-# LOKALOKA LANDING PAGE — production image untuk Komodo DevOps
-#
-# Build:
-#   docker build -t fe-pineapple .
-#
-# Build dengan env custom (Vite membake VITE_* saat build):
-#   docker build -t fe-pineapple \
-#     --build-arg VITE_API_BASE_URL=https://api.staging.example.com/api/v1 \
-#     --build-arg VITE_DASHBOARD_URL=https://dashboard-staging.example.com/ \
-#     --build-arg VITE_PLAYSTORE_URL=https://play.google.com/store/apps/details?id=... \
-#     .
-#
-# Run (URL juga bisa dioverride TANPA rebuild via env container):
-#   docker run -d -p 8080:80 \
-#     -e VITE_API_BASE_URL=https://api.landing-page.superpari.co.id/api/v1 \
-#     -e VITE_DASHBOARD_URL=https://dashboard-v2.localoka.co.id/ \
-#     -e VITE_PLAYSTORE_URL=https://play.google.com/store/apps/details?id=id.co.localoka.mobile&hl=id \
-#     fe-pineapple
-# ============================================================
-
 # ---------- Build stage ----------
 FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Build-time config (Vite membake VITE_* ke dalam bundle).
 # Di Komodo DevOps, isi nilainya lewat Build Args pipeline.
-ARG VITE_API_BASE_URL=https://api.landing-page.superpari.co.id/api/v1
-ARG VITE_API_PROXY_TARGET=https://api.landing-page.superpari.co.id
-ARG VITE_DASHBOARD_URL=https://dashboard-v2.localoka.co.id/
-ARG VITE_PLAYSTORE_URL=https://play.google.com/store/apps/details?id=id.co.localoka.mobile&hl=id
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL \
-    VITE_API_PROXY_TARGET=$VITE_API_PROXY_TARGET \
-    VITE_DASHBOARD_URL=$VITE_DASHBOARD_URL \
-    VITE_PLAYSTORE_URL=$VITE_PLAYSTORE_URL
-
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
