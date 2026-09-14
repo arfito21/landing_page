@@ -3,7 +3,7 @@
 # ============================================================
 # LOKALOKA LANDING PAGE
 # React + Vite
-# Runtime: Vite Preview :5173
+# Runtime: Nginx :80
 # ============================================================
 
 # ---------- Build ----------
@@ -21,26 +21,17 @@ RUN npm run build
 
 
 # ---------- Runtime ----------
-FROM node:20-alpine AS runtime
+FROM nginx:1.29-alpine AS runtime
 
-WORKDIR /app
-
-ENV NODE_ENV=production
-
-# Hasil build
-COPY --from=builder /app/dist ./dist
-
-# Vite diperlukan untuk menjalankan preview
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/package-lock.json ./package-lock.json
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Runtime ENV generator
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-EXPOSE 5173
+EXPOSE 80
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "5173"]
+CMD ["nginx", "-g", "daemon off;"]

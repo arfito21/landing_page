@@ -2,8 +2,8 @@
 
 set -e
 
-cat > /app/dist/env.js <<EOF
-window.__ENV__ = {
+cat > /usr/share/nginx/html/env.js <<EOF
+window.__LOKALOKA_ENV__ = {
   VITE_API_BASE_URL: "${VITE_API_BASE_URL:-}",
   VITE_API_PROXY_TARGET: "${VITE_API_PROXY_TARGET:-}",
   VITE_DASHBOARD_URL: "${VITE_DASHBOARD_URL:-}",
@@ -12,6 +12,6 @@ window.__ENV__ = {
 EOF
 
 echo "Runtime environment:"
-cat /app/dist/env.js
+cat /usr/share/nginx/html/env.js
 
 exec "$@"

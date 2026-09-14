@@ -12,15 +12,12 @@
 // ============================================================
 
 function readEnv(key) {
-  const buildValue = import.meta.env?.[key]
-  if (buildValue) return buildValue
-
   if (typeof window !== 'undefined') {
     const runtimeValue = window.__LOKALOKA_ENV__?.[key]
     if (runtimeValue) return runtimeValue
   }
 
-  return ''
+  return import.meta.env?.[key] || ''
 }
 
 export const API_BASE =
