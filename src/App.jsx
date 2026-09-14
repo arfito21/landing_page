@@ -1,5 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
+import logo from './assets/logo.jpeg'
+import BannerCarousel from './components/BannerCarousel'
 
 const products = [
   {
@@ -151,10 +153,10 @@ function ProductCard({ product, onOpen }) {
 
 function App() {
   const [selected, setSelected] = useState(null)
-  const [cart, setCart] = useState(0)
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('Semua')
-  const [quantity, setQuantity] = useState(1)
+  const [showLogin, setShowLogin] = useState(false)
+  const loginRef = useRef(null)
 
   const filtered = useMemo(() => {
     return products.filter((product) => {
@@ -169,27 +171,41 @@ function App() {
     })
   }, [category, query])
 
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (loginRef.current && !loginRef.current.contains(event.target)) {
+        setShowLogin(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleOutsideClick)
+    return () => document.removeEventListener('mousedown', handleOutsideClick)
+  }, [])
+
   const openProduct = (product) => {
     setSelected(product)
-    setQuantity(1)
   }
 
   const closeProduct = () => {
     setSelected(null)
-    setQuantity(1)
   }
 
-  const addToCart = () => {
-    setCart((current) => current + quantity)
-    closeProduct()
+  const openPrincipalDashboard = () => {
+    window.open(
+      'https://dashboard-v2.localoka.co.id/',
+      '_blank',
+      'noopener,noreferrer'
+    )
+    setShowLogin(false)
   }
 
-  const openDownloadApp = () => {
+  const openBuyerPlayStore = () => {
     window.open(
       'https://play.google.com/store/apps/details?id=id.co.localoka.mobile&hl=id',
       '_blank',
       'noopener,noreferrer'
     )
+    setShowLogin(false)
   }
 
   return (
@@ -200,7 +216,7 @@ function App() {
         <div className="topbar-inner">
 
           <div className="brand-mark">
-            <span>pasar</span>lokaloka
+            <img className="brand-logo" src={logo} alt="Lokaloka" />
           </div>
 
           <div className="search-wrap">
@@ -215,23 +231,55 @@ function App() {
 
           <nav className="nav-actions">
 
-            <button title="Keranjang">
-              🛒
-              <b>{cart}</b>
-            </button>
-
-            <button title="Wishlist">
-              ♡
-            </button>
-
             {/* BUTTON MASUK */}
-            <button
-              className="login"
-              onClick={openDownloadApp}
-              title="Download aplikasi Lokaloka"
-            >
-              Masuk
-            </button>
+            <div className="login-wrap" ref={loginRef}>
+              <button
+                className="login"
+                onClick={() => setShowLogin((value) => !value)}
+                aria-haspopup="true"
+                aria-expanded={showLogin}
+              >
+                Masuk
+              </button>
+
+              {showLogin && (
+                <div className="login-menu">
+                  <button
+                    className="login-option"
+                    onClick={openPrincipalDashboard}
+                  >
+                    <span className="menu-icon">🏪</span>
+
+                    <span>
+                      <b className="menu-title">
+                        Login sebagai Principal
+                      </b>
+
+                      <small className="menu-sub">
+                        Kelola toko &amp; dashboard UMKM
+                      </small>
+                    </span>
+                  </button>
+
+                  <button
+                    className="login-option"
+                    onClick={openBuyerPlayStore}
+                  >
+                    <span className="menu-icon">📲</span>
+
+                    <span>
+                      <b className="menu-title">
+                        Login sebagai Buyer
+                      </b>
+
+                      <small className="menu-sub">
+                        Download aplikasi Lokaloka di Google Play
+                      </small>
+                    </span>
+                  </button>
+                </div>
+              )}
+            </div>
 
           </nav>
         </div>
@@ -260,58 +308,9 @@ function App() {
 
       <main>
 
-        {/* HERO */}
-        <section className="hero-banner">
-
-          <div className="hero-copy">
-
-            <div className="bumn">
-              BUMN{' '}
-              <span>
-                UNTUK
-                <br />
-                INDONESIA
-              </span>
-            </div>
-
-            <h1>
-              Kembangkan Usahamu
-              <br />
-              di <strong>linkumkm</strong>
-            </h1>
-
-            <p>
-              Kini hadir LinkUMKM, platform online pemberdayaan
-              <br />
-              bagi para pelaku UMKM Naik Kelas.
-            </p>
-
-          </div>
-
-          <div
-            className="hero-people"
-            aria-hidden="true"
-          >
-            <div className="person person-a">
-              👨🏻‍💼
-            </div>
-
-            <div className="person person-b">
-              👩🏻‍🍳
-            </div>
-
-            <div className="person person-c">
-              👨🏻‍🌾
-            </div>
-
-            <i>●</i>
-            <i>●</i>
-          </div>
-
-          <div className="bri-logo">
-            BRI
-          </div>
-
+        {/* BANNER CAROUSEL */}
+        <section className="banner-section">
+          <BannerCarousel />
         </section>
 
         {/* KATEGORI */}
@@ -464,14 +463,13 @@ function App() {
         <div>
           <b>Layanan Pelanggan</b>
           <span>Pengembalian</span>
-          <span>Wishlist</span>
           <span>Chat</span>
         </div>
 
         <div className="footer-brand">
 
           <div className="brand-mark">
-            <span>pasar</span>lokaloka
+            <img className="brand-logo" src={logo} alt="Lokaloka" />
           </div>
 
           <small>
@@ -479,10 +477,14 @@ function App() {
           </small>
 
           <div className="stores">
-            <span> App Store</span>
-            <span>▶ Google Play</span>
+            <a
+              href="https://play.google.com/store/apps/details?id=id.co.localoka.mobile&hl=id"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>▶ Google Play</span>
+            </a>
           </div>
-
         </div>
 
       </footer>
@@ -553,80 +555,6 @@ function App() {
                 </div>
 
               </div>
-
-              {/* ORDER */}
-              <aside>
-
-                <label>
-                  Atur Jumlah Produk
-                </label>
-
-                <div className="quantity">
-
-                  <button
-                    onClick={() =>
-                      setQuantity((current) =>
-                        Math.max(1, current - 1)
-                      )
-                    }
-                  >
-                    −
-                  </button>
-
-                  <strong>
-                    {quantity}
-                  </strong>
-
-                  <button
-                    onClick={() =>
-                      setQuantity((current) =>
-                        current + 1
-                      )
-                    }
-                  >
-                    +
-                  </button>
-
-                </div>
-
-                <div className="subtotal">
-
-                  <span>
-                    Total
-                  </span>
-
-                  <b>
-                    {formatPrice(
-                      selected.price * quantity
-                    )}
-                  </b>
-
-                </div>
-
-                <button
-                  className="add-cart"
-                  onClick={addToCart}
-                >
-                  + Keranjang
-                </button>
-
-                <div className="voucher">
-
-                  <b>
-                    Voucher
-                  </b>
-
-                  <p>
-                    Diskon ongkir untuk belanja hari ini
-                  </p>
-
-                  <button>
-                    Klaim
-                  </button>
-
-                </div>
-
-              </aside>
 
             </div>
 
