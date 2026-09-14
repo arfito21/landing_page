@@ -5,13 +5,15 @@ import { defineConfig, loadEnv } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  // Baca env agar target proxy dev bisa diatur lewat VITE_API_PROXY_TARGET.
   const env = loadEnv(mode, process.cwd(), '')
-  const proxyTarget =
-    env.VITE_API_PROXY_TARGET ||
-    (env.VITE_API_BASE_URL
-      ? new URL(env.VITE_API_BASE_URL).origin
-      : 'https://api.landing-page.superpari.co.id')
+  const baseUrl =
+    env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1'
+  let proxyTarget = 'http://localhost:8080'
+  try {
+    proxyTarget = new URL(baseUrl).origin
+  } catch {
+    proxyTarget = baseUrl
+  }
 
   return {
     plugins: [react()],

@@ -2,8 +2,7 @@
 // KONFIGURASI APLIKASI — semua URL penting diambil dari env.
 // Lihat .env.example untuk daftar variabel yang tersedia.
 //
-//   VITE_API_BASE_URL     → base URL API landing page (production)
-//   VITE_API_PROXY_TARGET → target proxy Vite saat development
+//   VITE_API_BASE_URL     → base URL API landing page
 //   VITE_DASHBOARD_URL    → link dashboard principal
 //   VITE_PLAYSTORE_URL    → link Google Play Store aplikasi
 //
@@ -23,10 +22,6 @@ function readEnv(key) {
 export const API_BASE =
   readEnv('VITE_API_BASE_URL') ||
   'https://api.landing-page.superpari.co.id/api/v1'
-
-export const API_PROXY_TARGET =
-  readEnv('VITE_API_PROXY_TARGET') ||
-  'https://api.landing-page.superpari.co.id'
 
 export const DASHBOARD_URL =
   readEnv('VITE_DASHBOARD_URL') || 'https://dashboard-v2.localoka.co.id/'
