@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getBanners } from '../api'
 
-const AUTOPLAY_MS = 4000
+const AUTOPLAY_MS = 10000
 
 export default function BannerCarousel() {
   const [banners, setBanners] = useState([])
