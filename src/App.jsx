@@ -179,77 +179,90 @@ function App() {
       </main>
 
       {/* FOOTER */}
-      <footer>
+      <footer className="site-footer">
+        <div className="footer-inner">
+          <div className="footer-col footer-brand">
+            <div className="brand-mark">
+              <img className="brand-logo" src={logo} alt="Lokaloka" />
+            </div>
 
-        <div className="footer-brand">
+            <p className="footer-desc">
+              Pasar online Indonesia untuk produk lokal berkualitas dari UMKM terbaik.
+            </p>
 
-          <div className="brand-mark">
-            <img className="brand-logo" src={logo} alt="Lokaloka" />
+            <p className="footer-download-title">Download aplikasi</p>
+
+            <div className="stores">
+              <a
+                href={PLAYSTORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="store-btn"
+              >
+                <span className="store-icon">▶</span>
+                <span className="store-text">
+                  <small>GET IT ON</small>
+                  <strong>Google Play</strong>
+                </span>
+              </a>
+            </div>
           </div>
 
-          <span className="footer-desc">
-            Pasar online Indonesia untuk produk lokal berkualitas dari UMKM terbaik.
-          </span>
+          <nav className="footer-col footer-links">
+            <b>Bantuan dan Panduan</b>
+            <a href="#belanja">Belanja di Pasar</a>
+            <a href="#privasi">Kebijakan Privasi</a>
+            <a href="#syarat">Syarat dan Ketentuan</a>
+          </nav>
 
-          <small>
-            Download aplikasi
-          </small>
+          <nav className="footer-col footer-links">
+            <b>Jelajah Lokaloka</b>
+            <a href="#brilink">Pasar BRILINK</a>
+            <a href="#umkm">Pasar UMKM</a>
+            <a href="#segar">Segar Lokal</a>
+          </nav>
 
-          <div className="stores">
-            <a
-              href={PLAYSTORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              ▶ Google Play
-            </a>
+          <div className="footer-col footer-help">
+            <b>Help Center</b>
+            <p className="help-company">PT SUPER PASAR RAKYAT INDONESIA</p>
+
+            <ul className="help-list">
+              <li className="help-row">
+                <span className="help-icon">💬</span>
+                <span>
+                  <span className="help-label">WhatsApp</span>
+                  <a href="https://wa.me/6281119990084" target="_blank" rel="noreferrer">+62 811 1999 0084</a>
+                </span>
+              </li>
+              <li className="help-row">
+                <span className="help-icon">✉️</span>
+                <span>
+                  <span className="help-label">Email</span>
+                  <a href="mailto:help@pari.co.id">help@pari.co.id</a>
+                </span>
+              </li>
+              <li className="help-row">
+                <span className="help-icon">🕒</span>
+                <span className="help-hours">Mon - Fri (07:30 - 16:30 WIB)</span>
+              </li>
+            </ul>
+
+            <div className="help-gov">
+              <p className="help-gov-title">Pengaduan Konsumen</p>
+              <p>
+                Direktorat Jenderal Perlindungan Konsumen dan Tertib Niaga
+                Kementerian Perdagangan Republik Indonesia
+              </p>
+              <a href="https://wa.me/6285311111010" target="_blank" rel="noreferrer" className="help-gov-wa">
+                📞 +62 853 1111 1010
+              </a>
+            </div>
           </div>
-        </div>
-
-        <div>
-          <b>Bantuan dan Panduan</b>
-          <span>Belanja di Pasar</span>
-          <span>Kebijakan Privasi</span>
-          <span>Syarat dan Ketentuan</span>
-        </div>
-
-        <div>
-          <b>Jelajah Lokaloka</b>
-          <span>Pasar BRILINK</span>
-          <span>Pasar UMKM</span>
-          <span>Segar Lokal</span>
-        </div>
-
-        <div>
-          <b>Pembayaran</b>
-          <span>BRIVA</span>
-        </div>
-
-        <div className="footer-complaint">
-          <b>Layanan Pengaduan Konsumen</b>
-          <span className="complaint-company">PT. Super Pasar Rakyat Indonesia</span>
-          <span className="complaint-contact">
-            Hubungi{' '}
-            <a href="tel:081119990084">0811 1999 0084</a>
-            {' '}atau email ke{' '}
-            <a href="mailto:help@pari.co.id">help@pari.co.id</a>
-          </span>
-          <span className="complaint-gov">
-            Direktorat Jenderal Perlindungan Konsumen dan Tertib Niaga
-            Kementerian Perdagangan RI — Whatsapp Ditjen PKTN{' '}
-            <a
-              href="https://wa.me/6285311111010"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              0853 1111 1010
-            </a>
-          </span>
         </div>
 
         <div className="footer-bottom">
           <span>© 2026 Lokaloka. Seluruh hak cipta dilindungi.</span>
-          <span>Dibuat dengan bangga untuk UMKM Indonesia</span>
+          <span className="footer-made">Dibuat dengan ❤️ untuk UMKM Indonesia</span>
         </div>
 
       </footer>
